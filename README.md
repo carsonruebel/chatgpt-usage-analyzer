@@ -4,7 +4,7 @@
 
 It works entirely offline on your own machine. No data is uploaded or shared.
 
-[Download](https://github.com/carsonruebel/chatgpt-usage-analyzer/blob/main/downloads/ChatGPT-Usage-Analyzer.zip) 
+[Download](https://github.com/carsonruebel/chatgpt-usage-analyzer/raw/main/downloads/ChatGPT-Usage-Analyzer.zip)
 
 ---
 
