@@ -43,7 +43,7 @@ It works entirely offline on your own machine. No data is uploaded or shared.
 
 5. **Run the tool**  
    Double-click 'run-analyzer.bat'  
-   A console window will briefly appear, followed by an image being generated (chatgpt_usage.png).
+   A console window will briefly appear, followed by an image being generated (chatgpt_usage.png).  
    This image should auto-open, but if not you'll find it in the ChatGPT-Usage-Analyzer directory.
 
    ⚠️ **Windows SmartScreen Notice:**  
