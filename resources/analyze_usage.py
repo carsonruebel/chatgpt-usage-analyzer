@@ -6,8 +6,16 @@ import matplotlib.pyplot as plt
 import tiktoken
 
 # === SETTINGS ===
-#json_path = "conversations.json"
+# Try parent directory first
 json_path = os.path.join("..", "conversations.json")
+
+# If not found, try current directory
+if not os.path.exists(json_path):
+    json_path = "conversations.json"
+
+if not os.path.exists(json_path):
+    print(f"❌ File not found: {json_path}")
+    exit()
 cutoff_date_str = "2020-01-01"
 model = "gpt-4"
 
@@ -129,6 +137,6 @@ plt.ylabel("# Messages")
 plt.grid(True)
 plt.legend()
 plt.savefig("chatgpt_usage.png", bbox_inches="tight")
-print("✅ Plot saved as chatgpt_usage.png")
+print("Plot saved as chatgpt_usage.png")
 os.startfile("chatgpt_usage.png")
 

@@ -39,6 +39,14 @@ How to Use
    Double-click `run-analyzer.bat`  
    A console window will appear, followed by a graph window.
 
+   WARNING: Windows SmartScreen Notice  
+   You may see a warning like “Windows protected your PC”. This is expected for unsigned .bat files from new sources.
+   - Click “More info”
+   - Then click “Run anyway”
+
+   The script runs locally only and does NOT connect to the internet.
+   You can also right-click the file and choose “Edit” to review the code before running.
+
 ------------------------------------------------------------
 FAQ
 ------------------------------------------------------------

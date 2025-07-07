@@ -40,6 +40,14 @@ It works entirely offline on your own machine. No data is uploaded or shared.
    Double-click `run-analyzer.bat`  
    A console window will appear, followed by a graph window.
 
+   ⚠️ **Windows SmartScreen Notice:**  
+   You may see a warning like *“Windows protected your PC”*. This is expected for unsigned `.bat` files from new sources.  
+   - Click **“More info”**  
+   - Then click **“Run anyway”**  
+   
+   The script runs **locally only** and does **not connect to the internet**.  
+   You can also right-click and **choose “Edit”** to review the code before running.
+
 ---
 
 ## FAQ
