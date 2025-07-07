@@ -107,7 +107,7 @@ Bundled third-party software (e.g., Python, matplotlib) is licensed under their 
 
 ## Contact
 
-GitHub: https://github.com/carsonruebel/chatgpt-usage-analyzer
+GitHub: https://github.com/carsonruebel/chatgpt-usage-analyzer  
 Personal Site: https://www.carsonruebel.com
 
 ---
