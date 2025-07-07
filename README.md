@@ -23,7 +23,7 @@ It works entirely offline on your own machine. No data is uploaded or shared.
 
 1. **Export your ChatGPT data**  
    Visit: [https://chatgpt.com/#settings/DataControls](https://chatgpt.com/#settings/DataControls)  
-   Click **“Export data”** and wait for the email.
+   Click **“Export data”** and wait for the email.  
    It may take 5 or more minutes to arrive.  
    Be sure to check your junk or spam folder.
 
