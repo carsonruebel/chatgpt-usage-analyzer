@@ -10,7 +10,7 @@ It works entirely offline on your own machine. No data is uploaded or shared.
 
 ## What It Does
 
-- Parses your exported ChatGPT `conversations.json` file
+- Parses your exported ChatGPT 'conversations.json' file
 - Displays a daily message count graph with token usage summary
 - Highlights your most active and most verbose days
 - Works with both **ChatGPT Free** and **ChatGPT Plus**
@@ -29,25 +29,25 @@ It works entirely offline on your own machine. No data is uploaded or shared.
 
 
 2. **Download and unzip your export**  
-   ⚠️ The ZIP archive name is extremely long and may cause issues with long file paths on Windows.  
-   **Before unzipping, rename the archive** to something short like `chatgpt_export.zip`.
 
-   Inside, you'll find a file named `conversations.json`.
+   Inside, you'll find a file named 'conversations.json'.
 
 3. **Download this analyzer**  
    Either:
-   - Get the `.zip` version with included portable Python  
+   - Download the '.zip' version with included portable Python  
    - Or clone this repo manually
+   Extract the contents of the '.zip'
 
-4. **Move the analyzer files**  
-   Place the analyzer folder directly into your exported folder (the one with `conversations.json`).
+4. **Move the conversations.json file**  
+   Find the 'conversations.json' file and place it into the ChatGPT-Usage-Analyzer directory.
 
 5. **Run the tool**  
-   Double-click `run-analyzer.bat`  
-   A console window will appear, followed by a graph window.
+   Double-click 'run-analyzer.bat'  
+   A console window will briefly appear, followed by an image being generated (chatgpt_usage.png).
+   This image should auto-open, but if not you'll find it in the ChatGPT-Usage-Analyzer directory.
 
    ⚠️ **Windows SmartScreen Notice:**  
-   You may see a warning like *“Windows protected your PC”*. This is expected for unsigned `.bat` files from new sources.  
+   You may see a warning like *“Windows protected your PC”*. This is expected for unsigned '.bat' files from new sources.  
    - Click **“More info”**  
    - Then click **“Run anyway”**  
    
@@ -59,13 +59,13 @@ It works entirely offline on your own machine. No data is uploaded or shared.
 ## FAQ
 
 ### Does this include archived conversations?
-Yes, archived chats are included in the exported `conversations.json`.
+Yes, archived chats are included in the exported 'conversations.json'.
 
 ### Does this work with free accounts?
 Yes, both **Free** and **Plus** users can use this.
 
-### Why is it a `.bat` file instead of an `.exe`?
-This is left as a simple `.bat` file to allow:
+### Why is it a '.bat' file instead of an '.exe'?
+This is left as a simple '.bat' file to allow:
 - Easier inspection of the code
 - Better security transparency for cautious users
 - Portability and minimal system requirements
@@ -77,8 +77,8 @@ Currently untested on macOS. Contributions welcome!
 
 ## Included Files
 
-- `run-analyzer.bat` – Launch script
-- `resources/` – Contains embedded Python, required libraries, and analysis script
+- 'run-analyzer.bat' – Launch script
+- 'resources/' – Contains embedded Python, required libraries, and analysis script
 
 ---
 

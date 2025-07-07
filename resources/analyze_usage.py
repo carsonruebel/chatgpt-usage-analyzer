@@ -8,11 +8,18 @@ import tiktoken
 import textwrap
 
 # === SETTINGS ===
-json_path = os.path.join("..", "conversations.json")
-if not os.path.exists(json_path):
-    json_path = "conversations.json"
-if not os.path.exists(json_path):
-    print(f"❌ File not found: {json_path}")
+search_paths = [
+    "conversations.json",                      # Current directory
+    os.path.join("..", "conversations.json"),  # One level up
+    os.path.join("resources", "conversations.json"),  # In a 'resources' subfolder
+]
+
+for path in search_paths:
+    if os.path.exists(path):
+        json_path = path
+        break
+else:
+    print("❌ File not found in any expected location.")
     exit()
 
 cutoff_date_str = "2020-01-01"
