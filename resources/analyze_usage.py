@@ -8,7 +8,7 @@ import tiktoken
 import textwrap
 
 # === SETTINGS ===
-json_path = os.path.join("../..", "conversations.json")
+json_path = os.path.join("..", "conversations.json")
 if not os.path.exists(json_path):
     json_path = "conversations.json"
 if not os.path.exists(json_path):
