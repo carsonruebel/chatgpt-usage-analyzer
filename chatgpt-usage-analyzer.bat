@@ -9,5 +9,5 @@ set PYTHONHOME=resources\python
 set PYTHONPATH=resources\python
 set PATH=resources\python;%PATH%
 
-echo Launching ChatGPT Usage Analyzer...
+echo Analyzing ChatGPT conversations, wait a few moments (or longer for heavy users)
 resources\python\python.exe resources\analyze_usage.py
