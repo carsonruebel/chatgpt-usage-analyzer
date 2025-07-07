@@ -131,34 +131,42 @@ summary_text = (
 def fun_equivalent(n):
     if n >= 22_000_000:
         return "That’s more text than the entire United States Code of federal law."
-    elif n >= 17_000_000:
+    elif n >= 17_500_000:
         return "That’s like rewriting the entire Game of Thrones series ten times."
-    elif n >= 10_000_000:
-        return "That’s equivalent to writing twenty full doctoral dissertations."
+    elif n >= 14_750_000:
+        return "That’s the entire Dungeons & Dragons 5th Edition core rulebooks... multiplied thirty times."
+    elif n >= 11_000_000:
+        return "That’s about one‑quarter of the entire 32‑volume Encyclopedia Britannica"
+    elif n >= 8_600_000:
+        return "That’s twice the entire Wheel of Time series."
     elif n >= 5_400_000:
         return "That’s longer than the King James Bible seven times over."
+    elif n >= 3_300_000:
+        return "That’s the full Discworld series by Terry Pratchett, 41 novels worth."
     elif n >= 2_000_000:
         return "That’s double the total word count of the entire Harry Potter series."
-    elif n >= 1_000_000:
+    elif n >= 1_300_000:
+        return "That’s the entire Lord of the Rings trilogy, plus The Hobbit, twice over."
+    elif n >= 700_000:
         return "That’s longer than the complete Sherlock Holmes collection."
     elif n >= 400_000:
-        return "That’s about the length of *Les Misérables* in English translation."
-    elif n >= 200_000:
-        return "That’s two full novels and a shelved screenplay worth of text."
+        return "That’s about the length of Les Misérables in English translation."
+    elif n >= 180_000:
+        return "That’s the combined word count of The Fellowship of the Ring."
     elif n >= 100_000:
-        return "That’s as long as a classic fantasy novel or historical biography."
+        return "That’s the full word count of To Kill a Mockingbird, all 100,388 words of it."
     elif n >= 60_000:
         return "That’s more than a typical debut novel or thesis paper, easily."
     elif n >= 30_000:
         return "That’s longer than a technical manual or a short novella for sure."
-    elif n >= 10_000:
-        return "That’s the length of a detailed travel journal or a zine anthology."
+    elif n >= 11_000:
+        return "That’s the full transcript of Steve Jobs’ Stanford commencement speech... 50 times over."
     elif n >= 2_000:
         return "That’s more than a short blog post or product review online."
     elif n >= 500:
         return "That’s about the length of a very active Twitter thread these days."
     else:
-        return "That’s barely a paragraph—you’re just getting started, friend."
+        return "That’s barely a paragraph, you’re just getting started, friend."
 
 # === Compose and format right box content ===
 main_line = f"ChatGPT has written {total_words:,} words for you"
@@ -219,6 +227,19 @@ fig.text(
     ha='left',
     bbox=dict(facecolor='white', edgecolor='black', alpha=0.85),
     **box_style
+)
+
+# Attribution text at bottom right
+# Attribution text positioned via a custom invisible axis
+attribution_ax = fig.add_axes([0.76, -0.03, 0.22, 0.03], zorder=10)  # [left, bottom, width, height]
+attribution_ax.axis("off")
+attribution_ax.text(
+    1, 0, "Tool courtesy of carsonruebel.com",
+    ha="right",
+    va="bottom",
+    fontsize=7.5,
+    family="monospace",
+    color="#222222"
 )
 
 
