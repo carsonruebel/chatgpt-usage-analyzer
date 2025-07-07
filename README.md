@@ -4,6 +4,8 @@
 
 It works entirely offline on your own machine. No data is uploaded or shared.
 
+Download [here](https://chatgpt.com/#settings/DataControls) 
+
 ---
 
 ## What It Does
