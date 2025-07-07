@@ -3,19 +3,18 @@ import os
 from datetime import datetime, timedelta
 from collections import defaultdict
 import matplotlib.pyplot as plt
+from matplotlib.patches import Rectangle
 import tiktoken
+import textwrap
 
 # === SETTINGS ===
-# Try parent directory first
-json_path = os.path.join("..", "conversations.json")
-
-# If not found, try current directory
+json_path = os.path.join("../..", "conversations.json")
 if not os.path.exists(json_path):
     json_path = "conversations.json"
-
 if not os.path.exists(json_path):
     print(f"❌ File not found: {json_path}")
     exit()
+
 cutoff_date_str = "2020-01-01"
 model = "gpt-4"
 
@@ -25,44 +24,48 @@ try:
 except KeyError:
     enc = tiktoken.get_encoding("cl100k_base")
 
-cutoff_date = datetime.strptime(cutoff_date_str, "%Y-%m-%d") if cutoff_date_str else None
+cutoff_date = datetime.strptime(cutoff_date_str, "%Y-%m-%d")
 
-if not os.path.exists(json_path):
-    print(f"❌ File not found: {json_path}")
-    exit()
-
+# === LOAD JSON DATA ===
 with open(json_path, "r", encoding="utf-8") as f:
     conversations = json.load(f)
 
-# === MESSAGE & TOKEN COUNTING ===
+# === COUNT MESSAGES, TOKENS, WORDS PER DAY ===
 daily_message_counts = defaultdict(int)
 daily_token_counts = defaultdict(int)
+daily_word_counts = defaultdict(int)
+
 total_messages = 0
 total_tokens = 0
+total_words = 0
 
 for conv in conversations:
     mapping = conv.get("mapping", {})
     for msg_data in mapping.values():
         msg = msg_data.get("message")
-        if msg and msg.get("author", {}).get("role") == "user":
+        if msg and msg.get("author", {}).get("role") == "assistant":
             ts = msg.get("create_time")
             if not ts:
                 continue
             date = datetime.fromtimestamp(ts)
-            if cutoff_date and date < cutoff_date:
+            if date < cutoff_date:
                 continue
             date_str = date.strftime("%Y-%m-%d")
 
-            content = msg.get("content", {}).get("parts", [])
-            text = " ".join(str(p) if isinstance(p, str) else "" for p in content)
+            parts = msg.get("content", {}).get("parts", [])
+            text = " ".join(str(p) if isinstance(p, str) else "" for p in parts)
             token_count = len(enc.encode(text))
+            word_count = len(text.split())
 
             daily_message_counts[date_str] += 1
             daily_token_counts[date_str] += token_count
+            daily_word_counts[date_str] += word_count
+
             total_messages += 1
             total_tokens += token_count
+            total_words += word_count
 
-# === Fill in all dates (zero-usage included) ===
+# === FILL MISSING DATES ===
 all_dates = sorted(set(daily_message_counts.keys()) | set(daily_token_counts.keys()))
 start_date = datetime.strptime(all_dates[0], "%Y-%m-%d")
 end_date = datetime.strptime(all_dates[-1], "%Y-%m-%d")
@@ -71,6 +74,7 @@ full_range = (end_date - start_date).days + 1
 dates = []
 msg_counts = []
 tok_counts = []
+word_counts = []
 
 for i in range(full_range):
     date = start_date + timedelta(days=i)
@@ -78,65 +82,148 @@ for i in range(full_range):
     dates.append(date_str)
     msg_counts.append(daily_message_counts.get(date_str, 0))
     tok_counts.append(daily_token_counts.get(date_str, 0))
+    word_counts.append(daily_word_counts.get(date_str, 0))
 
-# === STATS ===
+# === STATS CALCULATION ===
 active_days = sum(1 for c in msg_counts if c > 0)
 avg_msg_all = total_messages / len(msg_counts)
-avg_msg_active = total_messages / active_days if active_days > 0 else 0
+avg_msg_active = total_messages / active_days if active_days else 0
 avg_tok_all = total_tokens / len(msg_counts)
-avg_tok_active = total_tokens / active_days if active_days > 0 else 0
+avg_tok_active = total_tokens / active_days if active_days else 0
+avg_word_all = total_words / len(msg_counts)
+avg_word_active = total_words / active_days if active_days else 0
 
-# === PRINT SUMMARY ===
+# === PRINT STATS TO CONSOLE ===
 print("\n📊 ChatGPT Combined Usage Summary")
 print("-----------------------------------")
 print(f"Start date: {dates[0]}")
 print(f"End date:   {dates[-1]}")
 print(f"Total messages: {total_messages}")
 print(f"Total tokens:   {total_tokens}")
+print(f"Total words:    {total_words}")
 print(f"Total days:     {len(dates)}")
 print(f"Days used:      {active_days}")
 print(f"▶ Avg msgs/day (all):    {avg_msg_all:.2f}")
 print(f"▶ Avg msgs/day (active): {avg_msg_active:.2f}")
 print(f"▶ Avg tokens/day (all):    {avg_tok_all:.2f}")
 print(f"▶ Avg tokens/day (active): {avg_tok_active:.2f}")
+print(f"▶ Avg words/day (all):    {avg_word_all:.2f}")
+print(f"▶ Avg words/day (active): {avg_word_active:.2f}")
+
+# === SUMMARY TEXT BOXES ===
+max_msg = max(zip(msg_counts, dates), key=lambda x: x[0])
+max_tok = max(zip(tok_counts, dates), key=lambda x: x[0])
+max_word = max(zip(word_counts, dates), key=lambda x: x[0])
+
+summary_text = (
+    f"START: {dates[0]}   END: {dates[-1]}\n"
+    f"TOTAL MESSAGES: {total_messages}   TOTAL TOKENS: {total_tokens}\n"
+    f"TOTAL WORDS: {total_words}\n"
+    f"ACTIVE DAYS: {active_days}/{len(dates)}\n"
+    f"MSGS/DAY (ALL): {avg_msg_all:.2f}   MSGS/DAY (ACTIVE): {avg_msg_active:.2f}\n"
+    f"TOKENS/DAY (ALL): {avg_tok_all:.2f}   TOKENS/DAY (ACTIVE): {avg_tok_active:.2f}\n"
+    f"WORDS/DAY (ALL): {avg_word_all:.2f}   WORDS/DAY (ACTIVE): {avg_word_active:.2f}\n"
+    f"MAX MESSAGES: {max_msg[0]} on {max_msg[1]}\n"
+    f"MAX TOKENS:   {max_tok[0]} on {max_tok[1]}\n"
+    f"MAX WORDS:    {max_word[0]} on {max_word[1]}"
+)
+
+def fun_equivalent(n):
+    if n >= 22_000_000:
+        return "That’s more text than the entire United States Code of federal law."
+    elif n >= 17_000_000:
+        return "That’s like rewriting the entire Game of Thrones series ten times."
+    elif n >= 10_000_000:
+        return "That’s equivalent to writing twenty full doctoral dissertations."
+    elif n >= 5_400_000:
+        return "That’s longer than the King James Bible seven times over."
+    elif n >= 2_000_000:
+        return "That’s double the total word count of the entire Harry Potter series."
+    elif n >= 1_000_000:
+        return "That’s longer than the complete Sherlock Holmes collection."
+    elif n >= 400_000:
+        return "That’s about the length of *Les Misérables* in English translation."
+    elif n >= 200_000:
+        return "That’s two full novels and a shelved screenplay worth of text."
+    elif n >= 100_000:
+        return "That’s as long as a classic fantasy novel or historical biography."
+    elif n >= 60_000:
+        return "That’s more than a typical debut novel or thesis paper, easily."
+    elif n >= 30_000:
+        return "That’s longer than a technical manual or a short novella for sure."
+    elif n >= 10_000:
+        return "That’s the length of a detailed travel journal or a zine anthology."
+    elif n >= 2_000:
+        return "That’s more than a short blog post or product review online."
+    elif n >= 500:
+        return "That’s about the length of a very active Twitter thread these days."
+    else:
+        return "That’s barely a paragraph—you’re just getting started, friend."
+
+# === Compose and format right box content ===
+main_line = f"ChatGPT has written {total_words:,} words for you"
+fun_line = " " * 54 + fun_equivalent(total_words)
+
+# Configure the wrapper to preserve that space and wrap by word
+wrapper = textwrap.TextWrapper(width=55, drop_whitespace=False)
+fun_line_wrapped = wrapper.wrap(fun_line)
+
+# Insert one blank line between intro and fun equivalent
+equiv_lines = [main_line, ""] + fun_line_wrapped
+
+# Combine and pad to match height of left box
+left_line_count = summary_text.count("\n") + 1
+equiv_lines += [""] * max(0, left_line_count - len(equiv_lines))
+
+equiv_text = "\n".join(equiv_lines)
+
+
 
 # === PLOT ===
-N = max(1, len(dates) // 20)
-plt.figure(figsize=(11, 7.5))  # taller figure to fit summary text
+plt.figure(figsize=(11, 7.5))
 fig = plt.gcf()
 fig.canvas.manager.set_window_title("ChatGPT Usage Summary")
 
+N = max(1, len(dates) // 20)
 plt.plot(dates, msg_counts, marker='o', linestyle='-', color='blue', label="Messages/day")
+plt.title("Daily ChatGPT Message Count with Token & Word Summary")
+plt.xlabel("Date")
+plt.ylabel("# Messages")
 plt.xticks(
     ticks=range(0, len(dates), N),
     labels=[dates[i] for i in range(0, len(dates), N)],
     rotation=45
 )
-
-# === Layout & Summary
-max_msg = max(zip(msg_counts, dates), key=lambda x: x[0])
-max_tok = max(zip(tok_counts, dates), key=lambda x: x[0])
-
-summary_text = (
-    f"START: {dates[0]}   END: {dates[-1]}\n"
-    f"TOTAL MESSAGES: {total_messages}   TOTAL TOKENS: {total_tokens}\n"
-    f"ACTIVE DAYS: {active_days}/{len(dates)}\n"
-    f"MSGS/DAY (ALL): {avg_msg_all:.2f}   MSGS/DAY (ACTIVE): {avg_msg_active:.2f}\n"
-    f"TOKENS/DAY (ALL): {avg_tok_all:.2f}   TOKENS/DAY (ACTIVE): {avg_tok_active:.2f}\n"
-    f"MAX MESSAGES: {max_msg[0]} on {max_msg[1]}\n"
-    f"MAX TOKENS:   {max_tok[0]} on {max_tok[1]}"
-)
-
-plt.tight_layout(rect=[0, 0.12, 1, 0.94])
-plt.figtext(0.01, 0.02, summary_text, ha="left", fontsize=8.5, bbox=dict(facecolor='white', alpha=0.85))
-plt.subplots_adjust(bottom=0.28)
-
-plt.title("Daily ChatGPT Message Count with Token Summary")
-plt.xlabel("Date")
-plt.ylabel("# Messages")
 plt.grid(True)
 plt.legend()
+plt.tight_layout(rect=[0, 0.18, 1, 0.94])
+
+# Add white background for summary boxes
+fig.patches.extend([
+    Rectangle((0, 0), 1, 0.17, transform=fig.transFigure, color='white', zorder=2)
+])
+
+box_style = dict(fontsize=8.5, family='monospace', verticalalignment='top')
+
+# Left summary box
+fig.text(
+    0.01, 0.17, summary_text,
+    ha='left',
+    bbox=dict(facecolor='white', edgecolor='black', alpha=0.85),
+    **box_style
+)
+
+# Right word count box (matched spacing, left-aligned text)
+fig.text(
+    0.635, 0.17, equiv_text,
+    ha='left',
+    bbox=dict(facecolor='white', edgecolor='black', alpha=0.85),
+    **box_style
+)
+
+
+
+# Save and view
 plt.savefig("chatgpt_usage.png", bbox_inches="tight")
 print("Plot saved as chatgpt_usage.png")
 os.startfile("chatgpt_usage.png")
-
