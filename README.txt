@@ -24,8 +24,11 @@ How to Use
    Visit: https://chatgpt.com/#settings/DataControls
    Click “Export data” and wait for the email.
 
-2. Download and unzip your export  
-   Inside, you'll find a file named `conversations.json`.
+2. Download and unzip your export
+   WARNING: The ZIP archive name is extremely long and may cause issues with long file paths on Windows.
+   Before unzipping, rename the archive to something short like chatgpt_export.zip.
+
+   Inside, you'll find a file named conversations.json.
 
 3. Download this analyzer  
    Either:  
