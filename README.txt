@@ -5,6 +5,8 @@ ChatGPT Usage Analyzer is a simple, privacy-first tool to visualize your persona
 
 It works entirely offline on your own machine. No data is uploaded or shared.
 
+Also, yes it was entirely vibe coded.
+
 ------------------------------------------------------------
 What It Does
 ------------------------------------------------------------

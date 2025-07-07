@@ -2,7 +2,9 @@
 
 **ChatGPT Usage Analyzer** is a simple, privacy-first tool to visualize your personal ChatGPT activity, including number of messages per day, token usage, and total usage over time. 
 
-It works entirely offline on your own machine. No data is uploaded or shared.
+It works entirely offline on your own machine. No data is uploaded or shared.  
+
+Also, yes it was entirely vibe coded.
 
 [Download](https://github.com/carsonruebel/chatgpt-usage-analyzer/raw/main/downloads/ChatGPT-Usage-Analyzer.zip)
 
