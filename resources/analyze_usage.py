@@ -9,8 +9,9 @@ import textwrap
 
 # === SETTINGS ===
 search_paths = [
-    "conversations.json",                      # Current directory
+    "conversations.json",  # Current directory
     os.path.join("..", "conversations.json"),  # One level up
+    os.path.join("../..", "conversations.json"),  # Two levels up
     os.path.join("resources", "conversations.json"),  # In a 'resources' subfolder
 ]
 
@@ -50,7 +51,8 @@ for conv in conversations:
     mapping = conv.get("mapping", {})
     for msg_data in mapping.values():
         msg = msg_data.get("message")
-        if msg and msg.get("author", {}).get("role") == "assistant":
+        if msg:
+            role = msg.get("author", {}).get("role")
             ts = msg.get("create_time")
             if not ts:
                 continue
@@ -64,13 +66,16 @@ for conv in conversations:
             token_count = len(enc.encode(text))
             word_count = len(text.split())
 
+            # Count for both user and assistant messages (left infobox)
             daily_message_counts[date_str] += 1
-            daily_token_counts[date_str] += token_count
-            daily_word_counts[date_str] += word_count
-
             total_messages += 1
+            daily_token_counts[date_str] += token_count
             total_tokens += token_count
-            total_words += word_count
+
+            if role == "assistant":
+                # Assistant word/token counts (right infobox)
+                daily_word_counts[date_str] += word_count
+                total_words += word_count
 
 # === FILL MISSING DATES ===
 all_dates = sorted(set(daily_message_counts.keys()) | set(daily_token_counts.keys()))
@@ -123,17 +128,17 @@ max_tok = max(zip(tok_counts, dates), key=lambda x: x[0])
 max_word = max(zip(word_counts, dates), key=lambda x: x[0])
 
 summary_text = (
-    f"START: {dates[0]}   END: {dates[-1]}\n"
-    f"TOTAL MESSAGES: {total_messages}   TOTAL TOKENS: {total_tokens}\n"
-    f"TOTAL WORDS: {total_words}\n"
+    f"START: {dates[0]} | END: {dates[-1]}\n"
+    f"TOTAL MESSAGES: {total_messages}\n"
+    f"TOTAL TOKENS: {total_tokens}\n\n"
     f"ACTIVE DAYS: {active_days}/{len(dates)}\n"
-    f"MSGS/DAY (ALL): {avg_msg_all:.2f}   MSGS/DAY (ACTIVE): {avg_msg_active:.2f}\n"
-    f"TOKENS/DAY (ALL): {avg_tok_all:.2f}   TOKENS/DAY (ACTIVE): {avg_tok_active:.2f}\n"
-    f"WORDS/DAY (ALL): {avg_word_all:.2f}   WORDS/DAY (ACTIVE): {avg_word_active:.2f}\n"
+    f"MSGS/DAY (ALL): {avg_msg_all:.2f} | MSGS/DAY (ACTIVE): {avg_msg_active:.2f}\n"
+    f"TOKENS/DAY (ALL): {avg_tok_all:.2f} | TOKENS/DAY (ACTIVE): {avg_tok_active:.2f}\n\n"
     f"MAX MESSAGES: {max_msg[0]} on {max_msg[1]}\n"
-    f"MAX TOKENS:   {max_tok[0]} on {max_tok[1]}\n"
-    f"MAX WORDS:    {max_word[0]} on {max_word[1]}"
+    f"MAX TOKENS:   {max_tok[0]} on {max_tok[1]}"
+
 )
+
 
 def fun_equivalent(n):
     if n >= 22_000_000:
@@ -175,6 +180,7 @@ def fun_equivalent(n):
     else:
         return "That’s barely a paragraph, you’re just getting started, friend."
 
+
 # === Compose and format right box content ===
 main_line = f"ChatGPT has written {total_words:,} words for you"
 fun_line = " " * 54 + fun_equivalent(total_words)
@@ -191,8 +197,6 @@ left_line_count = summary_text.count("\n") + 1
 equiv_lines += [""] * max(0, left_line_count - len(equiv_lines))
 
 equiv_text = "\n".join(equiv_lines)
-
-
 
 # === PLOT ===
 plt.figure(figsize=(11, 7.5))
@@ -249,7 +253,29 @@ attribution_ax.text(
     color="#222222"
 )
 
+# Left scoping label: *scoped to all messages*
+scope_left_ax = fig.add_axes([0.11, 0.18, 0.3, 0.03], zorder=10)  # [left, bottom, width, height]
+scope_left_ax.axis("off")
+scope_left_ax.text(
+    0, 0, "*scoped to all messages*",
+    ha="left",
+    va="bottom",
+    fontsize=8.5,
+    family="monospace",
+    color="#222222"
+)
 
+# Right scoping label: *scoped to assistant responses*
+scope_right_ax = fig.add_axes([0.7, 0.18, 0.2, 0.03], zorder=10)
+scope_right_ax.axis("off")
+scope_right_ax.text(
+    0, 0, "*scoped to assistant responses*",
+    ha="left",
+    va="bottom",
+    fontsize=8.5,
+    family="monospace",
+    color="#222222"
+)
 
 # Save and view
 plt.savefig("chatgpt_usage.png", bbox_inches="tight")
